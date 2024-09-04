@@ -1,0 +1,124 @@
+class Order {
+    private String ordernum;
+    private LocalDate orderdate;
+    private List<OrderLine> orderLines;
+
+    public Order(String ordernum, LocalDate orderdate) {
+        this.ordernum = ordernum;
+        this.orderdate = orderdate;
+        this.orderLines = new ArrayList<>();
+    }
+
+    public void addOrderLine(int orderlinenum, double price, int qty) {
+        OrderLine orderLine = new OrderLine(orderlinenum, price, qty, this);
+        orderLines.add(orderLine);
+    }
+
+    public List<OrderLine> getOrderLines() {
+        return orderLines;
+    }
+
+    public String getOrdernum() {
+        return ordernum;
+    }
+
+    public LocalDate getOrderdate() {
+        return orderdate;
+    }
+}
+
+class OrderLine {
+    private int orderlinenum;
+    private double price;
+    private int qty;
+    private Order order;
+
+    public OrderLine(int orderlinenum, double price, int qty, Order order) {
+        this.orderlinenum = orderlinenum;
+        this.price = price;
+        this.qty = qty;
+        this.order = order;
+    }
+
+    public int getOrderlinenum() {
+        return orderlinenum;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public int getQty() {
+        return qty;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Order order = new Order("12345", LocalDate.now());
+        order.addOrderLine(1, 99.99, 2);
+        order.addOrderLine(2, 49.99, 1);
+
+        System.out.println("Order Number: " + order.getOrdernum());
+        for (OrderLine ol : order.getOrderLines()) {
+            System.out.println("OrderLine " + ol.getOrderlinenum() + ": " + ol.getQty() + " units at $" + ol.getPrice());
+        }
+    }
+}
+
+package lesson2.lecture.unidirectional.onemany;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+
+class Student {
+    private String name;
+    private GradeReport gradeReport;
+
+    public Student(String name) {
+       this.name = name;
+       this.gradeReport = new GradeReport("A");
+    }
+
+    public String getName() {
+       return name;
+    }
+
+    public GradeReport getGradeReport() {
+       return gradeReport;
+    }
+}
+
+class GradeReport {
+    private String grade;
+    private Student student;
+
+    GradeReport(String grade, Student student) {
+       this.grade = grade;
+       this.student = student;
+    }
+
+    public String getGrade() {
+       return grade;
+    }
+
+    public Student getStudent() {
+       return student;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+       Student student = new Student("Jeffery");
+       GradeReport report = student.getGradeReport();
+
+       System.out.println("Student Name: " + student.getName());
+       System.out.println("Grade: " + report.getGrade());
+    }
+}
