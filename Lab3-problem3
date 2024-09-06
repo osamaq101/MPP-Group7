@@ -1,0 +1,126 @@
+package problem3.prob3;
+
+public class Address {
+	private String street;
+	private String city;
+	private String state;
+	private String zip;
+	
+	public Address(String str, String c, String state, String zip) {
+		street=str;
+		city=c;
+		this.state=state;
+		this.zip=zip;
+	}
+	
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getZip() {
+		return zip;
+	}
+
+	public void setZip(String zip) {
+		this.zip = zip;
+	}
+	
+}
+
+public class Admin {
+	public static double computeTotalRent(Property[] properties) {
+		double totalRent = 0;
+		for (Property p : properties) {
+			totalRent += p.computeRent();
+		}
+
+		return totalRent;
+	}
+}
+public class Condo extends Property{
+	private int numberOfFloors;
+
+	public Condo(Address address, int numberOfFloors) {
+        super(address);
+		this.numberOfFloors = numberOfFloors;
+	}
+
+    @Override
+	public double computeRent(){
+		return 500 * numberOfFloors;
+	}
+}
+public class Driver {
+
+	public static void main(String[] args) {
+		Address[] addresses = {
+				new Address("111 Main", "Fairfield", "IA", "52556"),
+				new Address("200 Forest Ave", "Fairfield", "IA", "52556"),
+			    new Address("10 N. 4th St.", "Fairfield", "IA", "52556")
+		};
+		Property[] properties = {
+				new House(addresses[0], 1200.0), 
+				new Condo(addresses[1], 2), 
+				new Trailer(addresses[2]) 
+		};
+		double totalRent = Admin.computeTotalRent(properties);
+		System.out.println(totalRent);
+	}
+}
+public class House extends Property {
+	private double lotSize;
+
+	public House(Address address, double lotSize) {
+        super(address);
+		this.lotSize = lotSize;
+	}
+
+    @Override
+	public double computeRent(){
+		return 0.1 * lotSize;
+	}
+}
+public abstract class Property {
+    public abstract double computeRent();
+    private Address address;
+
+    Property(Address address){
+        this.address = address;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+}
+public class Trailer extends Property {
+	private static final double RENT = 500;
+
+	public Trailer(Address address) {
+        super(address);
+	}
+
+    @Override
+    public double computeRent() {
+        return RENT;
+    }
+}
