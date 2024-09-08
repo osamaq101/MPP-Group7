@@ -1,0 +1,218 @@
+import java.time.LocalDate;
+import java.util.List;
+
+public class Commissioned extends Employee {
+
+	private double commission;
+	private double baseSalary;
+	private List<Order> orders;
+
+	public Commissioned(String empId, double commission, double baseSalary, List<Order> orders) {
+		super(empId);
+		this.commission = commission;
+		this.baseSalary = baseSalary;
+		this.orders = orders;
+	}
+
+	public double getBaseSalary() {
+		return this.baseSalary;
+	}
+
+	public double getCommission() {
+		return this.commission;
+	}
+
+	public List<Order> getOrders() {
+		return this.orders;
+	}
+
+	@Override
+	public double calcGrossPay(int month, int year) {
+		// = base salary + a percentage (commission) on the total value of all orders
+		// they sold during the previous month.
+		double sum = 0;
+		int previousMonth = month - 1;
+		for (Order order : orders) {
+			LocalDate orderDate = order.getOrderDate();
+			if (orderDate.getMonthValue() == previousMonth) {
+				sum += order.getOrderAmount();
+			}
+		}
+		return this.baseSalary + (this.commission * sum);
+	}
+
+}
+public abstract class Employee {
+	private String empId;
+
+	public Employee(String empId) {
+		this.empId = empId;
+	}
+
+	public String getEmpId() {
+		return this.empId;
+	}
+
+	public void print(int month, int year) {
+//		LocalDate now = LocalDate.now();
+//		System.out.println(calcCompensation(now.getMonthValue(), now.getYear()));
+
+		System.out.println("Employee Id: " + this.empId);
+		System.out.println("Paystub:");
+		Paycheck pc = calcCompensation(month, year);
+		System.out.println("Gross Pay: " + this.calcGrossPay(month, year));
+		System.out.println("Fica: " + pc.getFica());
+		System.out.println("State: " + pc.getState());
+		System.out.println("Local: " + pc.getLocal());
+		System.out.println("Medicare: " + pc.getMedicare());
+		System.out.println("Social Security: " + pc.getSocialSecurity());
+		pc.print();
+	};
+
+	public Paycheck calcCompensation(int month, int year) {
+		// This method takes the month and year as arguments
+		// to calculate the compensation and return the Paycheck.
+		double grossPay = this.calcGrossPay(month, year);
+		Paycheck pc = new Paycheck(grossPay);
+		return pc;
+	}
+
+	public abstract double calcGrossPay(int month, int year);
+
+}
+public class Hourly extends Employee {
+
+	private double hourlyWage;
+	private int hoursPerWeek;
+
+	public Hourly(String empId, double hourlyWage, int hoursPerWeek) {
+		super(empId);
+		this.hourlyWage = hourlyWage;
+		this.hoursPerWeek = hoursPerWeek;
+	}
+
+	public double getHourlyWage() {
+		return this.hourlyWage;
+	}
+
+	public int getHoursPerWeek() {
+		return this.hoursPerWeek;
+	}
+
+	@Override
+	public double calcGrossPay(int month, int year) {
+		return this.hourlyWage * this.hoursPerWeek * 4;
+	}
+
+}
+public class Order {
+	private String orderNo;
+	private LocalDate orderDate;
+	private int orderAmount;
+
+	public Order(String orderNo, LocalDate orderDate, int orderAmount) {
+		this.orderNo = orderNo;
+		this.orderDate = orderDate;
+		this.orderAmount = orderAmount;
+	}
+
+	public String getOrderNo() {
+		return this.orderNo;
+	}
+
+	public LocalDate getOrderDate() {
+		return this.orderDate;
+	}
+
+	public int getOrderAmount() {
+		return this.orderAmount;
+	}
+}
+public class Paycheck {
+
+	private double grossPay;
+	private double fica;
+	private double state;
+	private double local;
+	private double medicare;
+	private double socialSecurity;
+
+	public Paycheck(double grossPay, double fica, double state, double local, double medicare, double socialSecurity) {
+		this.grossPay = grossPay;
+		this.fica = fica;
+		this.state = state;
+		this.local = local;
+		this.medicare = medicare;
+		this.socialSecurity = socialSecurity;
+	}
+
+	public Paycheck(double grossPay) {
+		this(grossPay, 0.23, 0.05, 0.01, 0.03, 0.075);
+	}
+
+	public double getGrossPay() {
+		return this.grossPay;
+	}
+
+	public double getFica() {
+		return this.fica;
+	}
+
+	public double getState() {
+		return this.state;
+	}
+
+	public double getLocal() {
+		return this.local;
+	}
+
+	public double getMedicare() {
+		return this.medicare;
+	}
+
+	public double getSocialSecurity() {
+		return this.socialSecurity;
+	}
+
+	public void print() {
+		System.out.println("NET PAY:" + getNetPay());
+	}
+
+	public double getNetPay() {
+		return this.grossPay
+				- (this.fica + this.state + this.local + this.medicare + this.socialSecurity) * this.grossPay;
+	}
+}
+public class Salaried extends Employee {
+
+	private double salary;
+
+	public Salaried(String empId, double salary) {
+		super(empId);
+		this.salary = salary;
+	}
+
+	public double getSalary() {
+		return this.salary;
+	}
+
+	@Override
+	public double calcGrossPay(int month, int year) {
+		return this.salary;
+	}
+
+}
+public class Solution {
+
+	public static void main(String[] args) {
+		List<Order> list = new ArrayList<Order>();
+		list.add(new Order("100", LocalDate.of(2023, 2, 1), 200));
+		list.add(new Order("100", LocalDate.of(2023, 2, 10), 100));
+		Commissioned cm = new Commissioned("123", 0.8, 500, list);
+		Employee[] emp = { new Salaried("121", 4000), new Hourly("122", 15.67, 20), cm };
+		for (Employee e : emp) {
+			e.print(3, 2023);
+		}
+	}
+
+}
