@@ -1,0 +1,123 @@
+import java.util.ArrayList;
+import java.util.Random;
+
+interface RestaurantInterface {
+    String getRestaurantName();
+    double calculateDeliveryCharge(double distance);
+    
+    static void printFormattedData(String restaurantName, String customerName, double orderAmount, double deliveryCharge, double discount, double totalAfterDiscount) {
+        System.out.printf("Restaurant: %s%nCustomer: %s%nOrder Amount: $%.2f%nDelivery Charge: $%.2f%nDiscount Applied: $%.2f%nTotal after Discount: $%.2f%n", 
+                           restaurantName, customerName, orderAmount, deliveryCharge, discount, totalAfterDiscount);
+    }
+
+    default double calculateDiscount(double totalOrderAmount) {
+        if (totalOrderAmount > 100) {
+            return totalOrderAmount * 0.05;
+        }
+        return 0.0;
+    }
+}
+
+class Restaurant implements RestaurantInterface {
+    private String restaurantName;
+    private double baseDeliveryCharge;
+    private double locationDistance;
+
+    public Restaurant(String restaurantName, double baseDeliveryCharge, double locationDistance) {
+        this.restaurantName = restaurantName;
+        this.baseDeliveryCharge = baseDeliveryCharge;
+        this.locationDistance = locationDistance;
+    }
+
+    @Override
+    public String getRestaurantName() {
+        return restaurantName;
+    }
+
+    @Override
+    public double calculateDeliveryCharge(double distance) {
+        return baseDeliveryCharge + (distance * 0.05);
+    }
+
+    public double getLocationDistance() {
+        return locationDistance;
+    }
+}
+
+interface CustomerInterface {
+    String getCustomerName();
+    int getLoyaltyPoints();
+
+    default boolean isLoyaltyCustomer(int loyaltyPoints) {
+        return loyaltyPoints > 50;
+    }
+}
+
+class Customer implements CustomerInterface {
+    private String customerName;
+    private int loyaltyPoints;
+
+    public Customer(String customerName, int loyaltyPoints) {
+        this.customerName = customerName;
+        this.loyaltyPoints = loyaltyPoints;
+    }
+
+    @Override
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    @Override
+    public int getLoyaltyPoints() {
+        return loyaltyPoints;
+    }
+}
+
+public class FoodDeliverySystem {
+    public static void main(String[] args) {
+        // Create an ArrayList of Restaurants
+        ArrayList<Restaurant> restaurants = new ArrayList<>();
+        restaurants.add(new Restaurant("Sushi Palace", 5.0, 10.0));
+        restaurants.add(new Restaurant("Pizza Corner", 3.5, 5.0));
+        restaurants.add(new Restaurant("Burger World", 4.0, 7.5));
+
+        // Create an ArrayList of Customers
+        ArrayList<Customer> customers = new ArrayList<>();
+        customers.add(new Customer("John Doe", 60));
+        customers.add(new Customer("Jane Smith", 40));
+        customers.add(new Customer("Bob Johnson", 80));
+
+        // Print welcome message
+        System.out.println("Welcome to the Food Delivery System!");
+
+        Random random = new Random();
+
+        
+        for (Restaurant restaurant : restaurants) {
+            for (Customer customer : customers) {
+                System.out.println("Processing order for Customer: " + customer.getCustomerName() + " at Restaurant: " + restaurant.getRestaurantName());
+                
+                
+                boolean isLoyalCustomer = customer.isLoyaltyCustomer(customer.getLoyaltyPoints());
+                System.out.println("Customer Loyalty Status: " + (isLoyalCustomer ? "Loyal Customer" : "New Customer"));
+
+                
+                double orderAmount = 50 + (150 * random.nextDouble());
+
+                
+                double deliveryCharge = restaurant.calculateDeliveryCharge(restaurant.getLocationDistance());
+
+               
+                double discount = restaurant.calculateDiscount(orderAmount);
+
+            
+                double totalAfterDiscount = orderAmount - discount;
+
+                // Print formatted report
+                RestaurantInterface.printFormattedData(restaurant.getRestaurantName(), customer.getCustomerName(), orderAmount, deliveryCharge, discount, totalAfterDiscount);
+
+                System.out.println();
+            }
+        }
+    }
+}
