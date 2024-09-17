@@ -1,0 +1,156 @@
+//B : Explanation and fix :
+The equals() method signature is not properly overridden.
+Because in Java, when we override equals() method from Object class
+we need to follow the method signature of the class from which it is inherited.
+That is, Parameter passed should be Object and not Employee.
+Also, equals() method body is not properly implemented.
+
+package lesson7.labs.prob1.partB;
+
+import java.util.Objects;
+
+public class Employee {
+	private String name;
+	private int salary;
+	public Employee(String name, int salary) {
+		this.name = name;
+		this.salary = salary;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getSalary() {
+		return salary;
+	}
+	public void setSalary(int salary) {
+		this.salary = salary;
+	}
+	@Override
+	public String toString() {
+		return "(" + name + ", " + salary + ")";
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Employee employee = (Employee) o;
+		return salary == employee.salary && Objects.equals(name, employee.name);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(name, salary);
+	}
+}
+// C: Explanation and fix 
+There is no hashCode() method. As per the rule, if there is equals(),
+then there should be hashCode().
+
+package lesson7.labs.prob1.partC;
+
+import java.util.Objects;
+
+public class Employee {
+	private String name;
+	private int salary;
+	public Employee(String name, int salary) {
+		this.name = name;
+		this.salary = salary;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getSalary() {
+		return salary;
+	}
+	public void setSalary(int salary) {
+		this.salary = salary;
+	}
+	@Override 
+	public String toString() {
+		return "(" + name + ", " + salary + ")";
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(name, salary);
+	}
+
+	@Override
+	public boolean equals(Object ob) {
+		if(ob == null) return false;
+		if(!(ob instanceof Employee)) return false;
+		Employee emp = (Employee)ob;
+		return emp.name.equals(name) && emp.salary == salary;
+	}
+	
+	
+}
+
+//D: Explanation and fixed code
+The issue arises because the Employee class overrides equals() and hashCode(),
+but it includes the visited field in both. This causes inconsistencies during the duplicate removal process.
+Specifically, two Employee objects with the same name and salary but different visited values are considered unequal,
+which is incorrect if we're only comparing based on name and salary.
+package lesson7.labs.prob1.partD;
+
+public class Employee {
+	private String name;
+	private int salary;
+	private boolean visited = false;
+	
+	public Employee(String name, int salary) {
+		this.name = name;
+		this.salary = salary;
+	}
+	
+	public void setVisited(boolean b) {
+		visited = b;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getSalary() {
+		return salary;
+	}
+	public void setSalary(int salary) {
+		this.salary = salary;
+	}
+	@Override 
+	public String toString() {
+		return "(" + name + ", " + salary + ")";
+	}
+	
+	@Override
+	public boolean equals(Object ob) {
+		if(ob == null) return false;
+		if(!(ob instanceof Employee)) return false;
+		Employee emp = (Employee)ob;
+		return emp.name.equals(name) && emp.salary == salary;
+				//&& emp.visited == visited;
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = 17;
+		long longval = Double.doubleToLongBits(salary);
+		int salaryHash = (int) (longval ^ (longval >>> 32));
+		result += 31 * result + name.hashCode();
+		result += 31 * result + salaryHash;
+		//result += 31 * result + (visited ? 1 : 0);
+		return result;
+	}
+}
