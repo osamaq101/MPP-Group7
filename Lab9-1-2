@@ -1,0 +1,35 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.IntStream;
+
+public class Lab9Q1 {
+
+    public static void main(String[] args) {
+
+        List<String> words = new ArrayList<>(Arrays.asList("Mike", "Cathrine", "David", "Suzana"));
+
+        System.out.println("number of words found: " + countWords(words, 'k', 'o', 4));
+        // Question 2
+        printSquares(4);
+        
+    }
+
+    public static int countWords(List<String> words, char c, char d, int len) {
+
+        int count = (int) words.stream().
+                filter(xx -> xx.indexOf(c) >= 0 && xx.length() == len && xx.indexOf(d) < 0).count();
+
+        return count;
+    }
+
+    public static void printSquares(int num)
+    {
+        IntStream.iterate(1,i->i+1)
+                .map(i -> i * i)
+                .limit(num)
+                .forEach(System.out::println);
+    }
+}
