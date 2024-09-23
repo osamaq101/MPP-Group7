@@ -1,0 +1,97 @@
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+public class LambdaLibrary
+{
+    public static final BiFunction<List<Employeee>, Integer, String> EMPLOYEE_FILTER_AND_MAP =
+            (list, salaryThreshold) -> list.stream()
+                    .filter(e -> e.getSalary() > salaryThreshold)
+                    .filter(e -> e.getLastName().compareTo("M") > 0)
+                    .map(e -> e.getFirstName() + " " + e.getLastName())
+                    .sorted() 
+                    .collect(Collectors.joining(", "));
+
+
+}
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class Employeee {
+    String firstName, lastName;
+
+
+    int salary;
+    public Employeee(String f, String l, int s) {
+        this.firstName = f;
+        this.lastName = l;
+        this.salary = s;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("<");
+        sb.append("first name: ");
+        sb.append(firstName);
+        sb.append(" last name: ");
+        sb.append(lastName);
+        sb.append(" salary: ");
+        sb.append("" + salary+">");
+        return sb.toString();
+
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public int getSalary() {
+        return salary;
+    }
+
+    public void setSalary(int salary) {
+        this.salary = salary;
+    }
+    public static void main(String[] args) {
+        List<Employeee> list = Arrays.asList(new Employeee("Joe", "Davis", 120000),
+                new Employeee("John", "Sims", 110000),
+                new Employeee("Joe", "Stevens", 200000),
+                new Employeee("Andrew", "Reardon", 80000),
+                new Employeee("Joe", "Cummings", 760000),
+                new Employeee("Steven", "Walters", 135000),
+                new Employeee("Thomas", "Blake", 111000),
+                new Employeee("Alice", "Richards", 101000),
+                new Employeee("Donald", "Trump", 100000));
+
+        //your stream pipeline here
+      //a
+       String res= list.stream().filter(e -> e.getSalary() >100000)
+                .filter(lastname->lastname.getLastName().compareTo("M")>0 )
+                .map(e->e.getFirstName()+" "+e.getLastName())
+                .sorted()
+                .collect(Collectors.joining(", "));
+       //b
+        String result = LambdaLibrary.EMPLOYEE_FILTER_AND_MAP.apply(list, 100000);
+       System.out.println(res);
+       System.out.println(result);
+
+
+    }
+
+}
+
